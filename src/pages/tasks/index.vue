@@ -6,21 +6,17 @@ import type { TasksWithProjects } from '@/utils/supaQueries'
 usePageStore().pageData.title = 'My Tasks'
 
 const tasks = ref<TasksWithProjects | null>(null)
-;(async () => {
+const getTasks = async () => {
   const { data, error, status } = await tasksWithProjectsQuery
 
   if (error) useErrorStore().setError({ error, customCode: status })
 
   tasks.value = data
+}
 
-})()
-
-
-useErrorStore().setError({error: Error('I am an uncaught error')})
-
+await getTasks()
 </script>
 
 <template>
   <DataTable v-if="tasks" :columns="columns" :data="tasks" />
 </template>
-

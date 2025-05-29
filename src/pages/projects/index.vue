@@ -6,16 +6,15 @@ import type { Projects } from '@/utils/supaQueries'
 usePageStore().pageData.title = 'Projects'
 
 const projects = ref<Projects | null>(null)
-;(async () => {
+const getProjects = async () => {
   const { data, error, status } = await projectsQuery
 
   if (error) useErrorStore().setError({ error, customCode: status })
 
   projects.value = data
-  console.log('projects: ', projects.value)
-})()
+}
 
-
+await getProjects()
 </script>
 
 <template>

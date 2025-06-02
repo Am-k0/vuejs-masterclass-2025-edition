@@ -18,10 +18,17 @@ watch(
   if (error) useErrorStore().setError({ error, customCode: status })
   project.value = data
 })()
+const { getProfilesByIds } = useCollabs()
+
+const collabs = project.value?.collaborators
+  ? await getProfilesByIds(project.value?.collaborators)
+  : []
+
+// const {updateProject} = projectsLoader
 /*
 const project = ref<Project | null>(null)
 
-const getProjects = async () => {
+const getProjects  = async () => {
   const { data, error } = await projectQuery(route.params.slug)
 
   if (error) console.log(error)
@@ -37,17 +44,28 @@ await getProjects()
   <Table v-if="project">
     <TableRow>
       <TableHead> Name </TableHead>
-      <TableCell> {{ project.name }} </TableCell>
+      <TableCell>
+        <AppInPlaceEditText v-model="project.name" @commit="updateProject" />
+      </TableCell>
     </TableRow>
     <TableRow>
       <TableHead> Description </TableHead>
       <TableCell>
-        {{ project.description }}
+        <AppInPlaceEditTextarea
+          class="h-20"
+          v-model="project.description"
+          @commit="updateProject"
+        />
       </TableCell>
     </TableRow>
     <TableRow>
       <TableHead> Status </TableHead>
-      <TableCell>{{ project.status }}</TableCell>
+      <TableCell>
+        <AppInPlaceEditStatus
+          v-model="project.status"
+          @commit="updateProject"
+        />
+      </TableCell>
     </TableRow>
     <TableRow>
       <TableHead> Collaborators </TableHead>
@@ -55,11 +73,17 @@ await getProjects()
         <div class="flex">
           <Avatar
             class="-mr-4 border border-primary hover:scale-110 transition-transform"
-            v-for="collab in project.collaborators"
-            :key="collab"
+            v-for="collab in collabs"
+            :key="collab.id"
           >
-            <RouterLink class="w-full h-full flex items-center justify-center" to="">
-              <AvatarImage src="" alt="" />
+            <RouterLink
+              class="w-full h-full flex items-center justify-center"
+              :to="{
+                name: '/users/[username]',
+                params: { username: collab.username }
+              }"
+            >
+              <AvatarImage :src="collab.avatar_url || ''" alt="" />
               <AvatarFallback> </AvatarFallback>
             </RouterLink>
           </Avatar>
@@ -68,7 +92,10 @@ await getProjects()
     </TableRow>
   </Table>
 
-  <section v-if="project" class="mt-10 flex flex-col md:flex-row gap-5 justify-between grow">
+  <section
+    v-if="project"
+    class="mt-10 flex flex-col md:flex-row gap-5 justify-between grow"
+  >
     <div class="flex-1">
       <h2>Tasks</h2>
       <div class="table-container">
@@ -82,9 +109,18 @@ await getProjects()
           </TableHeader>
           <TableBody>
             <TableRow v-for="task in project.tasks" :key="task.id">
-              <TableCell> Lorem ipsum dolor sit amet. </TableCell>
-              <TableCell> In progress </TableCell>
-              <TableCell> 22/08/2024 </TableCell>
+              <TableCell class="p-0">
+                <RouterLink
+                  class="text-left block hover:bg-muted p-4"
+                  :to="{ name: '/tasks/[id]', params: { id: task.id } }"
+                >
+                  {{ task.name }}
+                </RouterLink>
+              </TableCell>
+              <TableCell>
+                <AppInPlaceEditStatus readonly :modelValue="task.status" />
+              </TableCell>
+              <TableCell> {{ task.due_date }} </TableCell>
             </TableRow>
           </TableBody>
         </Table>

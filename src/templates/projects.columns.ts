@@ -6,7 +6,6 @@ import type { GroupedCollabs } from '@/types/GroupedCollabs'
 import Avatar from '@/components/ui/avatar/Avatar.vue'
 import AvatarImage from '@/components/ui/avatar/AvatarImage.vue'
 import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue'
-import AppInPlaceEditStatus from '@/components/AppInPlaceEdit/AppInPlaceEditStatus.vue'
 
 export const columns = (
   collabs: Ref<GroupedCollabs>
@@ -32,8 +31,7 @@ export const columns = (
       return h(
         'div',
         { class: 'text-left font-medium' },
-         
-         h(AppInPlaceEditStatus, { modelValue: row.original.status, readonly: true })
+        row.getValue('status')
       )
     }
   },
@@ -43,7 +41,7 @@ export const columns = (
     cell: ({ row }) => {
       return h(
         'div',
-        { class: 'text-left font-medium h-20 flex items-center' },
+        { class: 'text-left font-medium' },
         collabs.value[row.original.id]
           ? collabs.value[row.original.id].map((collab) => {
               return h(RouterLink, { to: `/users/${collab.username}` }, () => {

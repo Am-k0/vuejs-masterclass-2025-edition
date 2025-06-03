@@ -1,22 +1,29 @@
 <script setup lang="ts">
-import { projectsQuery } from '@/utils/supaQueries'
 import { columns } from '@/utils/tableColumns/projectsColumns'
-import type { Projects } from '@/utils/supaQueries'
-
 
 usePageStore().pageData.title = 'Projects'
 
-const projects = ref<Projects | null>(null)
-;( async () => {
-  const { data, error, status } = await projectsQuery
+const projectsLoader = useProjectsStore()
+const { projects } = storeToRefs(projectsLoader)
+const { getProjects } = projectsLoader
 
-  if (error) useErrorStore().setError({ error, customCode: status })
+await getProjects()
 
-  projects.value = data
-})()
+const { getGroupedCollabs, groupedCollabs } = useCollabs()
 
+getGroupedCollabs(projects.value ?? [])
+
+const columnsWithCollabs = columns(groupedCollabs)
+
+useMeta({
+  title: 'Projects | Pulse',
+  description: {
+    name: 'description',
+    content: 'See all projects in Pulse.'
+  }
+})
 </script>
 
 <template>
-  <DataTable v-if="projects" :columns="columns" :data="projects" />
+  <DataTable v-if="projects" :columns="columnsWithCollabs" :data="projects" />
 </template>

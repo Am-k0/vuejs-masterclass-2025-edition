@@ -25,14 +25,19 @@ export default defineConfig({
         /\.vue\?vue/, // .vue
         /\.md$/ // .md
       ],
-      imports: ['vue', VueRouterAutoImports,
+      imports: [
+        'vue',
+        VueRouterAutoImports,
         {
-          'pinia':['defineStore', 'acceptHMRUpdate', 'storeToRefs'],
+          pinia: ['defineStore', 'storeToRefs', 'acceptHMRUpdate']
+        },
+        {
+          'vue-meta': ['useMeta']
         }
       ],
       dts: true,
       viteOptimizeDeps: true,
-      dirs:['src/stores/**', 'src/composables/**']
+      dirs: ['src/stores/**', 'src/composables/**']
     }),
     vue({
       template: {

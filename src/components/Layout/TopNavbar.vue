@@ -34,7 +34,7 @@ const toggleDark = useToggle(isDark)
           <DropdownMenuTrigger>
             <Avatar>
               <AvatarImage
-                :src="profile.avatar_url || ''"
+                :src="profile.avatar_url || 'AL'"
                 :alt="`${profile.full_name} profile picture`"
               />
               <AvatarFallback>CN</AvatarFallback>
